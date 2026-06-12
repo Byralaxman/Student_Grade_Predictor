@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+import joblib
+import os
+
+file_path = 'student_data.csv'
+if not os.path.exists(file_path):
+    print(f"File {file_path} not found, Re-enter the correct file path.")
+else:
+    df=pd.read_csv(file_path)
+    X=df[['StudyHours', 'Attendance']]
+    y=df['FinalGrade']
+
+    model=LinearRegression()
+    model.fit(X, y)
+
+    joblib.dump(model, 'grade_predictor_model.pkl')
+    print("Model trained and saved Successfully.")
+
+    print("\n-- Student Grade Prediction --")
+    try:
+        user_hours=float(input("Enter study hours: "))
+        user_attendance=float(input("Enter attendance percentage: "))
+        
+        if not (0 <= user_attendance <= 100):
+            print("Attendance must be between 0 and 100.")
+        
+        input_data=pd.DataFrame([[user_hours, user_attendance]], columns=['StudyHours', 'Attendance'])
+        prediction=model.predict(input_data)
+
+        print(f"\nEstimated Final Grade: {prediction[0]:.2f}")
+
+    except ValueError:
+        print("Invalid input. Please enter numerical values.") 
